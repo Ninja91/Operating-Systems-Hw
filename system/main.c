@@ -65,11 +65,17 @@ process	main(void)
     resume (
 	   create((void *)f1, 65536, 20, "f1  process", 0,
            NULL));
+
+    pid32 victim_pid;
+
 	resume (
-	   create((void *)myvictim, 65536, 30, "myvictim  process", 1,
+	   create((void *)myvictim, 2048, 10, "myvictim process", 1,
+           5));
+	resume (victim_pid = 
+	   create((void *)myvictim, 2048, 10, "myvictim process", 1,
            5));
 	resume (
-	   create((void *)myhacker, 65536, 30, "myhacker  process", 1,
-           4));
+	   create((void *)myhacker, 2048, 10, "myhacker process", 1,
+           victim_pid));
 	        return OK;
 }

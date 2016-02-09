@@ -3,21 +3,20 @@
 extern int victim_global;
 void  myhackermalware(void){
     victim_global = 1;
-    kprintf("\n\nHacked: %d\n", victim_global);
-    //while(1);
+    char *pattern = "***************************************";
+    kprintf("\n%s\nFrom PID: %d\n victim_global = %d\n%s\n", pattern, currpid, victim_global, pattern);
+    while(1);
 }
 
 void myhacker(pid32 pid){
     struct procent * proc = &proctab[pid];
-    unsigned int * fp, *ret;
+    unsigned long * fp, *ret;
 
-    stacktrace(pid);
-
-    fp = (unsigned int *)proc->prstkptr;
+    kprintf("\n\nmyhacker pid = %d\n", currpid);
+    
+    fp = (unsigned long *)proc->prstkptr;
     fp += 2;
-    fp = (unsigned int *) *fp;
-    //fp = (unsigned int *) *fp;
-    //fp = (unsigned int *) *fp;
+    fp = (unsigned long *) *fp;
     ret = fp + 1;
-    *ret = (unsigned int *) myhackermalware;
+    *ret = (unsigned long *) myhackermalware;
 }

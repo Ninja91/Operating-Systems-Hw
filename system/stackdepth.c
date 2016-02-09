@@ -6,30 +6,31 @@ static unsigned long	*ebp;
  * stackdepth - print a stack depth process
  *------------------------------------------------------------------------
  */
-uint32 stackdepth(int pid)
+#define DEBUG
+uint32 stackdepth(pid32 pid)
 {
 	struct procent	*proc = &proctab[pid];
 	unsigned long	*topsp, *topfp;
     uint32 cnt = 0;
 
-	if (pid != 0 && isbadpid(pid))
-		return SYSERR;
 	if (pid == currpid) {
-        //kprintf("\nUsing currpid\n");
 		asm("movl %esp,esp");
 		asm("movl %ebp,ebp");
 		topsp = esp;
 		topfp = ebp;
 	} else {
-        //kprintf("\nNot Using\n");
 		topsp = (unsigned long *)proc->prstkptr;
 		topfp = topsp + 2; 		
 	}
-    
-	kprintf("\n\ntopsp %X topfp %X \n", topsp, topfp);
+ 
+#ifdef DEBUG
+	kprintf("\n\nesp %X ebp %X \n", topsp, topfp);
+#endif
+
     while(topfp < (unsigned long *)proc->prstkbase){
+        kprintf("\n\nStack frame from top %d : ebp = %X, size = %d\n", cnt, topfp, (unsigned long *) *topfp - topfp);
         cnt++;
-        topfp = *topfp;
+        topfp = (unsigned long *) *topfp;
     }
 	return cnt - 1;
 }
