@@ -1,11 +1,12 @@
 #include<xinu.h>
 
-extern int victim_global;
+extern int victimglobal;
+
 void  myhackermalware(void){
-    victim_global = 1;
+    victimglobal = 1;
     char *pattern = "***************************************";
-    kprintf("\n%s\nFrom PID: %d\n victim_global = %d\n%s\n", pattern, currpid, victim_global, pattern);
-    while(1);
+    kprintf("\n%s\nFrom PID: %d\n victimglobal = %d\n%s\n", pattern, currpid, victimglobal, pattern);
+    //while(1);
 }
 
 void myhacker(pid32 pid){

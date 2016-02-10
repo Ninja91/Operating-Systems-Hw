@@ -9,10 +9,13 @@ extern void f1(void);
 extern void myvictim(int);
 extern void myhacker(int);
 
+extern int myappA(int, int);
+
 extern long host2netlb(long);
 extern long host2netlc(long);
 
-int victim_global = 0;
+int victimglobal = 0;
+static unsigned long	*esp;
 
 process	main(void)
 {
@@ -48,15 +51,15 @@ process	main(void)
 
     uint32 a = 0xAABBCCDD;
     uint32 b = host2netla(a);
-    kprintf("\nLil Endian to Big \n\nBig Ending of %x is %x", a, b);
+    kprintf("\n\nLil Endian to Big Endian\nBig Endian of %x is %x", a, b);
     
     a = 0xAABBCCDD;
     b = host2netlb(a);
-    kprintf("\nLil Endian to Big \n\nBig Ending of %x is %x", a, b);
+    kprintf("\n\nLil Endian to Big Endian\nBig Endian of %x is %x", a, host2netlb(a));
 
     a = 0xAABBCCDD;
     b = host2netlc(a);
-    kprintf("\nLil Endian to Big \n\nBig Ending of %x is %x", a, b);
+    kprintf("\n\nLil Endian to Big Endian\nBig Endian of %x is %x", a, b);
 
     prntsegaddr();
    
@@ -65,6 +68,25 @@ process	main(void)
     resume (
 	   create((void *)f1, 65536, 20, "f1  process", 0,
            NULL));
+
+    unsigned long * topsp;
+    pid32 myappA_pid = 0;
+
+    asm("movl %esp, esp");
+    topsp = esp;
+    kprintf("\ncurrpid : %d\n", currpid);
+    kprintf("\nBefore myappA is created\n");
+    kprintf("run-time stack top : address = %x, content = %x\n", topsp, (unsigned long *) *topsp);
+
+    myappA_pid = create( (void *) myappA, 65536, 20, "myappA process", 2, 5, currpid);
+    asm("movl %esp, esp");
+    topsp = esp;
+    kprintf("\nAfter myappA is created but before resuming it\n");
+    kprintf("run-time stack top : address = %x, content = %x\n", topsp, (unsigned long *) *topsp);
+
+    resume(myappA_pid);
+
+    sleepms(500);
 
     pid32 victim_pid;
 

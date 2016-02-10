@@ -7,30 +7,25 @@ static unsigned long	*ebp;
  *------------------------------------------------------------------------
  */
 #define DEBUG
-uint32 stackdepth(pid32 pid)
+uint32 stackdepth()
 {
-	struct procent	*proc = &proctab[pid];
-	unsigned long	*topsp, *topfp;
+	struct procent	*proc = &proctab[currpid];
+	unsigned long	*topsp, *topbp;
     uint32 cnt = 0;
 
-	if (pid == currpid) {
-		asm("movl %esp,esp");
-		asm("movl %ebp,ebp");
-		topsp = esp;
-		topfp = ebp;
-	} else {
-		topsp = (unsigned long *)proc->prstkptr;
-		topfp = topsp + 2; 		
-	}
+    asm("movl %esp,esp");
+    asm("movl %ebp,ebp");
+    topsp = esp;
+    topbp = ebp;
  
 #ifdef DEBUG
-	kprintf("\n\nesp %X ebp %X \n", topsp, topfp);
+	kprintf("\n\nesp %X ebp %X \n", topsp, topbp);
 #endif
 
-    while(topfp < (unsigned long *)proc->prstkbase){
-        kprintf("\n\nStack frame from top %d : ebp = %X, size = %d\n", cnt, topfp, (unsigned long *) *topfp - topfp);
+    while(topbp < (unsigned long *)proc->prstkbase){
+        kprintf("\n\nStack frame from top %d : ebp = %X, size = %d\n", cnt, topbp, (unsigned long *) *topbp - topbp);
         cnt++;
-        topfp = (unsigned long *) *topfp;
+        topbp = (unsigned long *) *topbp;
     }
 	return cnt - 1;
 }

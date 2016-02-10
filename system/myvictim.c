@@ -1,6 +1,6 @@
 #include<xinu.h>
 
-extern int victim_global;
+extern int victimglobal;
 
 int myvictim2(int x){
 #ifdef DEBUG
@@ -23,6 +23,6 @@ void myvictim(int x){
     kprintf("\n\nmyvictim pid = %d\n", currpid);
     myvictim1(x);
     myvictim2(x);
-    kprintf("\n%s\nFrom PID : %d\n victim_global = %d\n%s", pattern, currpid, victim_global, pattern);
+    kprintf("\n%s\nFrom PID : %d\n victim_global = %d\n%s", pattern, currpid, victimglobal, pattern);
 }
 

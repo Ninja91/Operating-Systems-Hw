@@ -1,3 +1,5 @@
+#include <xinu.h>
+
 long host2netlb( long x){
     asm("push %ebp");
     asm("mov %esp, %ebp");
