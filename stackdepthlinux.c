@@ -4,55 +4,49 @@ static unsigned long *esp,*ebp;
 
 int stackdepthlinux()
 {
-
-        unsigned long *topsp,*topbp;
-        asm("movl %esp,esp");
-        asm("movl %ebp,ebp");
-        topsp=esp;
-        topbp=ebp;
-        int count=0;
-
-        while(topbp!=NULL)
-        {
-
-                topsp=topbp+2;
-                topbp=(unsigned long *) *topbp;
-                count++;
-        }
-
-        return count-1;
+    unsigned long *topsp,*topbp;
+    int cnt = 0;
+ 
+    asm("movl %esp,esp");
+    asm("movl %ebp,ebp");
+    topsp = esp;
+    topbp = ebp;
+    
+    while(topbp != 0) /**In linux the base ebp of the process value is set to 0*/
+    {
+        topbp = (unsigned long *) *topbp;
+        cnt++;
+    }
+    
+    return cnt-1;
 }
 
 
-void myfunction2()
+void foo2()
 {
-
-        printf("Stack depth %d\n",stackdepthlinux());
+    printf("\n\nfoo2() stack depth = %d\n",stackdepthlinux());
 }
 
-void myfunction()
+void foo()
 {
-        myfunction2();
-        printf("Stack depth %d\n",stackdepthlinux());
+    foo2();
+    printf("\n\nfoo() Stack depth = %d\n",stackdepthlinux());
 }
+
 int main()
 {
-   int child_pid;
-   int status;
-   int local = 0;
-   child_pid = fork();
-   if (child_pid >= 0)
-   {
-        if(child_pid==0)
-        {
-
-                myfunction();
-                int depth=stackdepthlinux();
-                printf("Stack depth %d\n",depth);
-        }
-        else
-        {
-            printf("Stack depth %d\n",stackdepthlinux());
-        }
-        }
+    int fork_ret;
+    int status;
+    int local = 0;
+    fork_ret = fork();
+    if(fork_ret == 0) {
+        foo();
+        return 0;
+    }
+    else if (fork_ret > 0) {
+            printf("\n\nmain() stack depth %d\n",stackdepthlinux());
+            return 0;
+    }
+    else 
+        return -1;
 }
