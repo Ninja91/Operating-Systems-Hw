@@ -1,7 +1,14 @@
 /* newqueue.c - newqueue */
 
 #include <xinu.h>
+#include <lab2.h>
 
+/* Handling the rescheduler changes for different parts of the question*/
+#ifdef LAB2_HEADER
+#define LAB2COND (lab2flag == 4 || lab2flag == 5)
+#else
+#define LAB2COND 0
+#endif
 /*------------------------------------------------------------------------
  *  newqueue  -  Allocate and initialize a queue in the global queue table
  *------------------------------------------------------------------------
@@ -22,9 +29,16 @@ qid16	newqueue(void)
 
 	queuetab[queuehead(q)].qnext = queuetail(q);
 	queuetab[queuehead(q)].qprev = EMPTY;
-	queuetab[queuehead(q)].qkey  = MAXKEY;
+	if (LAB2COND) 
+        queuetab[queuehead(q)].qkey  = MINKEY;
+    else
+        queuetab[queuehead(q)].qkey  = MAXKEY;
+
 	queuetab[queuetail(q)].qnext = EMPTY;
 	queuetab[queuetail(q)].qprev = queuehead(q);
-	queuetab[queuetail(q)].qkey  = MINKEY;
+	if (LAB2COND)
+        queuetab[queuetail(q)].qkey  = MAXKEY;
+    else
+        queuetab[queuetail(q)].qkey  = MINKEY;
 	return q;
 }

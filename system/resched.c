@@ -1,9 +1,15 @@
 /* resched.c - resched, resched_cntl */
-
 #include <xinu.h>
+#include <lab2.h>
+
+#ifdef LAB2_HEADER
+#define LAB2COND (lab2flag == 4 || lab2flag == 5)
+#else
+#define LAB2COND 0
+#endif
 
 struct	defer	Defer;
-
+uint32 prctxswintime = 0; 
 /*------------------------------------------------------------------------
  *  resched  -  Reschedule processor to highest priority eligible process
  *------------------------------------------------------------------------
@@ -23,11 +29,25 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 	/* Point to process table entry for the current (old) process */
 
 	ptold = &proctab[currpid];
+    /* Calculating CPU time used by the old process*/
+    ptold->prcpumsec += clktimemsec - prctxswintime;
 
 	if (ptold->prstate == PR_CURR) {  /* Process remains eligible */
-		if (ptold->prprio > firstkey(readylist)) {
-			return;
-		}
+        if (LAB2COND){
+            ptold->prprio = MIN(MAXKEY, ptold->initprio + ptold->prcpumsec);
+
+            //kprintf("\nPID: %d, clktimemsec: %d ctxtintime: %d \n", currpid, clktimemsec, prctxswintime);
+            /* kprintf("\nPID: %d, prcpumsec: %d \n", currpid, ptold->prcpumsec); */
+            
+            if (ptold->prprio < firstkey(readylist)) {
+                return;
+            }
+        }
+        else {
+            if (ptold->prprio > firstkey(readylist)) {
+			    return;
+		    }
+        }
 
 		/* Old process will no longer remain current */
 
@@ -41,7 +61,11 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 	ptnew = &proctab[currpid];
 	ptnew->prstate = PR_CURR;
 	preempt = QUANTUM;		/* Reset time slice for process	*/
-	ctxsw(&ptold->prstkptr, &ptnew->prstkptr);
+    
+    /* Setting the context time in variable for the new process to keep track of the CPU cycles consumed by this process*/
+    prctxswintime = clktimemsec;
+   
+    ctxsw(&ptold->prstkptr, &ptnew->prstkptr);
 
 	/* Old process returns here when resumed */
 

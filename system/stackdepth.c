@@ -3,7 +3,7 @@ static unsigned long	*esp;
 static unsigned long	*ebp;
 
 /*------------------------------------------------------------------------
- * stackdepth - print a stack depth process
+ * stackdepth - print a stack depth  of a process
  *------------------------------------------------------------------------
  */
 #define DEBUG
@@ -19,11 +19,11 @@ uint32 stackdepth()
     topbp = ebp;
  
 #ifdef DEBUG
-	kprintf("\n\nesp %X ebp %X \n", topsp, topbp);
+	kprintf("\n\nesp 0x%X ebp 0x%X \n", topsp, topbp);
 #endif
 
     while(topbp < (unsigned long *)proc->prstkbase){
-        kprintf("\n\nStack frame from top %d : ebp = %X, size = %d\n", cnt, topbp, (unsigned long *) *topbp - topbp);
+        kprintf("\n\nStack frame from top %d : ebp = 0x%X, size = %d\n", cnt, topbp, (unsigned long *) *topbp - topbp);
         cnt++;
         topbp = (unsigned long *) *topbp;
     }

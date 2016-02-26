@@ -43,6 +43,9 @@
 struct procent {		/* Entry in the process table		*/
 	uint16	prstate;	/* Process state: PR_CURR, etc.		*/
 	pri16	prprio;		/* Process priority			*/
+
+	pri16	initprio;		/* Initial priority	at the time of process creation		*/
+
 	char	*prstkptr;	/* Saved stack pointer			*/
 	char	*prstkbase;	/* Base of run time stack		*/
 	uint32	prstklen;	/* Stack length in bytes		*/
@@ -52,6 +55,8 @@ struct procent {		/* Entry in the process table		*/
 	umsg32	prmsg;		/* Message sent to this process		*/
 	bool8	prhasmsg;	/* Nonzero iff msg is valid		*/
 	int16	prdesc[NDESC];	/* Device descriptors for process	*/
+
+    uint32 prcpumsec; /* CPU Time used by the process */
 };
 
 /* Marker for the top of a process stack (used to help detect overflow)	*/

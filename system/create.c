@@ -1,7 +1,7 @@
 /* create.c - create, newpid */
 
 #include <xinu.h>
-
+#include <lab2.h>
 local	int newpid();
 
 #define	roundew(x)	( (x+3)& ~0x3)
@@ -43,10 +43,22 @@ pid32	create(
 
 	/* Initialize process table entry for new process */
 	prptr->prstate = PR_SUSP;	/* Initial state is suspended	*/
+
+    prptr->prcpumsec = 0; // Initializing the cpu cycles used by process to 0
+    prptr->initprio = priority; // Setting initial priority
+   
+    /* Incase of Part 5 of question we need to do a priority demotion of a new process to 
+     * make sure that the older process don't starve. In taking care of that we also need to make sure that the new process still gets a higher 
+     * priority as it has not consumed any CPU cycles */
+    if (lab2flag == 5){
+        prptr->initprio = MAX(firstkey(readylist), prptr->initprio); //Demoting new process priority such that it is still highest priority in ready queue.
+    }
+
 	prptr->prprio = priority;
 	prptr->prstkbase = (char *)saddr;
 	prptr->prstklen = ssize;
 	prptr->prname[PNMLEN-1] = NULLCH;
+
 	for (i=0 ; i<PNMLEN-1 && (prptr->prname[i]=name[i])!=NULLCH; i++)
 		;
 	prptr->prsem = -1;

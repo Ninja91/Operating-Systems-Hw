@@ -4,6 +4,14 @@
 
 #include <xinu.h>
 #include <string.h>
+#include <lab2.h>
+
+/* Handling the rescheduler changes for different parts of the question*/
+#ifdef LAB2_HEADER
+#define LAB2COND (lab2flag == 4 || lab2flag == 5)
+#else
+#define LAB2COND 0
+#endif
 
 extern	void	start(void);	/* Start of Xinu code			*/
 extern	void	*_end;		/* End of Xinu code			*/
@@ -143,8 +151,18 @@ static	void	sysinit()
 
 	prptr = &proctab[NULLPROC];
 	prptr->prstate = PR_CURR;
-	prptr->prprio = 0;
-	strncpy(prptr->prname, "prnull", 7);
+   
+    prptr->initprio = MAXKEY;
+    prptr->prcpumsec = 1;
+    
+    if (LAB2COND) {
+        prptr->prprio = MAXKEY;// prptr->initprio + prptr->prcpumsec; //Highest int16 value. The Null process must take the lowest priority.
+    }
+    else {
+        prptr->prprio = 0;
+    }
+
+    strncpy(prptr->prname, "prnull", 7);
 	prptr->prstkbase = getstk(NULLSTK);
 	prptr->prstklen = NULLSTK;
 	prptr->prstkptr = 0;
