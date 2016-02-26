@@ -151,10 +151,13 @@ static	void	sysinit()
 
 	prptr = &proctab[NULLPROC];
 	prptr->prstate = PR_CURR;
-   
+  
+    /* Setting the null process initial priority as the highest so that all other processes can run before it*/
     prptr->initprio = MAXKEY;
     prptr->prcpumsec = 1;
+    prptr->prctxswintime = 0;
     
+    /* Reversing the priority order in case of Dynamic Process Scheduling (Q4 and Q5.) */
     if (LAB2COND) {
         prptr->prprio = MAXKEY;// prptr->initprio + prptr->prcpumsec; //Highest int16 value. The Null process must take the lowest priority.
     }

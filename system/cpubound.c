@@ -17,7 +17,7 @@ void cpubound(int32 loop1, int32 loop2) {
                 src++;
                 dst++;
             }
-
+            /* Fast ALU Operation */
             alu_calc = 2*3*4*5*6*7*8*9*10;
         }
 

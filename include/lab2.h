@@ -1,5 +1,4 @@
 extern int32 lab2flag;
-extern uint32 prctxswintime;
 extern uint32 prcpumin;
 
 void app_unlim(void);

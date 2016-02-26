@@ -57,6 +57,7 @@ struct procent {		/* Entry in the process table		*/
 	int16	prdesc[NDESC];	/* Device descriptors for process	*/
 
     uint32 prcpumsec; /* CPU Time used by the process */
+    uint32 prctxswintime ; /* CPU Time used by the process */
 };
 
 /* Marker for the top of a process stack (used to help detect overflow)	*/

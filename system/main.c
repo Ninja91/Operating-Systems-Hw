@@ -18,17 +18,22 @@ extern void app_unlim(void);
 extern void app_lim(void);
 
 int victimglobal = 0;
-int32 lab2flag = 5;
+int32 lab2flag = 4;
 
 static unsigned long	*esp;
 
 void homework3()
 {
+    /* Test case for Prob 3. */
     /* lab2q3t1(); */
-    /* lab2q4t1(); */
+    /* Test case 1 for Prob 4. */
+    lab2q4t1();
+    /* Test case 2 for Prob 4. */
     /* lab2q4t2(); */
+    /* Test case 3 for Prob 4. */
     /* lab2q4t3(); */
-    lab2q5t1();
+    /* Test case for Prob 5. */
+    /* lab2q5t1(); */
 }
 
 process	main(void)

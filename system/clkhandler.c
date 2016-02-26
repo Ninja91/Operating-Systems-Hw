@@ -12,6 +12,7 @@ void	clkhandler()
 
 	/* Decrement the ms counter, and see if a second has passed */
 
+    /* Variable to count time in msec */
     clktimemsec++;
 	if((--count1000) <= 0) {
 

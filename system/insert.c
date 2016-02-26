@@ -28,11 +28,13 @@ status	insert(
 	}
 
 	curr = firstid(q);
+    /* Reversing the priority order in case of Dynamic Process Scheduling (Q4 and Q5.) */
     if (LAB2COND) {
         while (queuetab[curr].qkey <= key) { /* Changing to Linux/BSD format of priority representation where lower value means higher priority*/
             curr = queuetab[curr].qnext;
         }
     } 
+    /* Retain the normal order otherwise.*/
     else {
         while (queuetab[curr].qkey >= key) { 
             curr = queuetab[curr].qnext;

@@ -29,6 +29,8 @@ qid16	newqueue(void)
 
 	queuetab[queuehead(q)].qnext = queuetail(q);
 	queuetab[queuehead(q)].qprev = EMPTY;
+    /* Reversing the priority order in case of Dynamic Process Scheduling (Q4 and Q5.) */
+    /* The head of queue gets the minimum value as priority*/
 	if (LAB2COND) 
         queuetab[queuehead(q)].qkey  = MINKEY;
     else
@@ -36,6 +38,8 @@ qid16	newqueue(void)
 
 	queuetab[queuetail(q)].qnext = EMPTY;
 	queuetab[queuetail(q)].qprev = queuehead(q);
+    /* Reversing the priority order in case of Dynamic Process Scheduling (Q4 and Q5.) */
+    /* The tail of queue gets the maximum value as priority*/
 	if (LAB2COND)
         queuetab[queuetail(q)].qkey  = MAXKEY;
     else
