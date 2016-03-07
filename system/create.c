@@ -50,7 +50,8 @@ pid32	create(
     /* Incase of Part 5 of question we need to do a priority demotion of a new process to 
      * make sure that the older process don't starve. In taking care of that we also need to make sure that the new process still gets a higher 
      * priority as it has not consumed any CPU cycles */
-    if (lab2flag == 5){
+    /* Solution 1 for Part 5*/
+    if (lab2flag == 5 && lab2q5sol == 1){
         prptr->initprio = MAX(firstkey(readylist), prptr->initprio); //Demoting new process priority such that it is still highest priority in ready queue.
     }
 

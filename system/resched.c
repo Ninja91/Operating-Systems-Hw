@@ -34,13 +34,31 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 
 	if (ptold->prstate == PR_CURR) {  /* Process remains eligible */
         if (LAB2COND){
+
             /*Updating (Actually demoting )the priority of running process by adding the cpu cycles to its priority*/
             /* Clamping prioriy to max value */
             ptold->prprio = MIN(MAXKEY, ptold->initprio + ptold->prcpumsec);
 
-            //kprintf("\nPID: %d, clktimemsec: %d ctxtintime: %d \n", currpid, clktimemsec, prctxswintime);
-            /* kprintf("\nPID: %d, prcpumsec: %d \n", currpid, ptold->prcpumsec); */
-           
+            if (lab2q5sol == 2) {
+                int no_rady_procs = 0;
+                int16 cycles_in_slice_used = clktimemsec - ptold->prctxswintime;
+                pid32 pid;
+               
+                /* Counting the number of processes in the ready list currently*/
+                for(pid = firstid(readylist); queuetab[pid].qnext != EMPTY; pid = queuetab[pid].qnext)
+                    no_rady_procs++;
+                
+                /* Computing the new priority of processes in the ready list and updating in proctab and queutab.*/
+                for(pid = firstid(readylist); queuetab[pid].qnext != EMPTY; pid = queuetab[pid].qnext){
+
+                    if (pid > 2) // To ensure that only application processes are evaluated. Not even main is considered.
+                        proctab[pid].prcpu_wait_ratio += cycles_in_slice_used / (no_rady_procs * QUANTUM);
+
+                    proctab[pid].prprio -= proctab[pid].prcpu_wait_ratio;
+                    queuetab[pid].qkey = proctab[pid].prprio;
+                }
+            }
+
             /* Reversing the priority order in case of Dynamic Process Scheduling (Q4 and Q5.) */
             if (ptold->prprio < firstkey(readylist)) {
                 return;

@@ -58,6 +58,7 @@ struct procent {		/* Entry in the process table		*/
 
     uint32 prcpumsec; /* CPU Time used by the process */
     uint32 prctxswintime ; /* CPU Time used by the process */
+    uint32 prcpu_wait_ratio ; /* Proportion of CPU Time waited by the process */
 };
 
 /* Marker for the top of a process stack (used to help detect overflow)	*/

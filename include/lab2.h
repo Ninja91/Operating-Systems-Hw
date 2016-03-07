@@ -1,5 +1,6 @@
 extern int32 lab2flag;
 extern uint32 prcpumin;
+extern int32 lab2q5sol;
 
 void app_unlim(void);
 void app_lim(void);

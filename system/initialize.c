@@ -145,6 +145,7 @@ static	void	sysinit()
 		prptr->prname[0] = NULLCH;
 		prptr->prstkbase = NULL;
 		prptr->prprio = 0;
+        prptr->prcpu_wait_ratio = 0; // Initializing waits at creation for each process to 0
 	}
 
 	/* Initialize the Null process entry */	
@@ -154,7 +155,7 @@ static	void	sysinit()
   
     /* Setting the null process initial priority as the highest so that all other processes can run before it*/
     prptr->initprio = MAXKEY;
-    prptr->prcpumsec = 1;
+    prptr->prcpumsec = 0;
     prptr->prctxswintime = 0;
     
     /* Reversing the priority order in case of Dynamic Process Scheduling (Q4 and Q5.) */
