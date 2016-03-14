@@ -18,7 +18,7 @@ extern void app_unlim(void);
 extern void app_lim(void);
 
 int victimglobal = 0;
-int32 lab2flag = 5; // Flag to get different implementation for different parts of question.
+int32 lab2flag = 6; // Flag to get different implementation for different parts of question.
 // Set it to 4 for Part 4 and 5 for part 5. Anything else is for Part 3.
 int32 lab2q5sol = 2; //Set this to 1 for solution1 to part 5 and set it to 2 for solution 2 of Quetion Part 5
 static unsigned long	*esp;
@@ -34,7 +34,9 @@ void homework3()
     /* Test case 3 for Prob 4. */
     /* lab2q4t3(); */
     /* Test case for Prob 5. */
-    lab2q5t1();
+    /* lab2q5t1(); */
+    lab3q4t1();
+    /* lab3q4t2(); */
 }
 
 process	main(void)

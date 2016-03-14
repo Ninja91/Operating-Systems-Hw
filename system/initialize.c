@@ -5,6 +5,9 @@
 #include <xinu.h>
 #include <string.h>
 #include <lab2.h>
+#include <ts_disptb.h>
+#include <multilevelfbq.h>
+#include <receiverq.h>
 
 /* Handling the rescheduler changes for different parts of the question*/
 #ifdef LAB2_HEADER
@@ -15,6 +18,9 @@
 
 extern	void	start(void);	/* Start of Xinu code			*/
 extern	void	*_end;		/* End of Xinu code			*/
+
+/* TS scheduler data structure */
+struct ts_disptb tsdtab[NOF_PRIOIRITIES];
 
 /* Function prototypes */
 
@@ -88,9 +94,9 @@ void	nulluser()
      * Prints the welcome message */
     mywelcomemsg();
 	/* Create a process to execute function main() */
-
+    kprintf("\n Just before main creation");
 	resume (
-	   create((void *)main, INITSTK, INITPRIO, "Main process", 0,
+	   create((void *)main, INITSTK, 11, "Main process", 0,
            NULL));
 
 	/* Become the Null process (i.e., guarantee that the CPU has	*/
@@ -163,7 +169,7 @@ static	void	sysinit()
         prptr->prprio = MAXKEY;// prptr->initprio + prptr->prcpumsec; //Highest int16 value. The Null process must take the lowest priority.
     }
     else {
-        prptr->prprio = 0;
+        prptr->prprio = MINPRIO;
     }
 
     strncpy(prptr->prname, "prnull", 7);
@@ -188,6 +194,8 @@ static	void	sysinit()
 	/* Create a ready list for processes */
 
 	readylist = newqueue();
+    initialize_mltfbq();
+    init_recieverq();
 
 	/* Initialize the real time clock */
 

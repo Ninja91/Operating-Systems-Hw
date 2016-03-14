@@ -6,6 +6,7 @@
  * clkhandler - high level clock interrupt handler
  *------------------------------------------------------------------------
  */
+extern int timescliceconsumed;
 void	clkhandler()
 {
 	static	uint32	count1000 = 1000;	/* Count to 1000 ms	*/
@@ -41,6 +42,7 @@ void	clkhandler()
 	/*   remaining time reaches zero			     */
 
 	if((--preempt) <= 0) {
+        timescliceconsumed = 1;
 		preempt = QUANTUM;
 		resched();
 	}

@@ -45,6 +45,7 @@ pid32	create(
 	prptr->prstate = PR_SUSP;	/* Initial state is suspended	*/
 
     prptr->prcpumsec = 0; // Initializing the cpu cycles used by process to 0
+    if (priority > 19) priority = 19;
     prptr->initprio = priority; // Setting initial priority
    
     /* Incase of Part 5 of question we need to do a priority demotion of a new process to 
@@ -52,9 +53,8 @@ pid32	create(
      * priority as it has not consumed any CPU cycles */
     /* Solution 1 for Part 5*/
     if (lab2flag == 5 && lab2q5sol == 1){
-        prptr->initprio = MAX(firstkey(readylist), prptr->initprio); //Demoting new process priority such that it is still highest priority in ready queue.
+        /* prptr->initprio = MAX(firstkey(readylist), prptr->initprio); //Demoting new process priority such that it is still highest priority in ready queue. */
     }
-
 	prptr->prprio = priority;
 	prptr->prstkbase = (char *)saddr;
 	prptr->prstklen = ssize;
@@ -110,6 +110,7 @@ pid32	create(
 	*--saddr = 0;			/* %edi */
 	*pushsp = (unsigned long) (prptr->prstkptr = (char *)saddr);
 	restore(mask);
+    /* kprintf("\nMain created, PID: %d, priority: %d, new prio = %d",pid, priority, prptr->prprio); */
 	return pid;
 }
 

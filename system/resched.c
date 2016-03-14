@@ -1,6 +1,8 @@
 /* resched.c - resched, resched_cntl */
 #include <xinu.h>
 #include <lab2.h>
+#include <ts_disptb.h>
+#include <multilevelfbq.h>
 
 #ifdef LAB2_HEADER
 #define LAB2COND (lab2flag == 4 || lab2flag == 5)
@@ -9,6 +11,7 @@
 #endif
 
 struct	defer	Defer;
+int timescliceconsumed;
 /*------------------------------------------------------------------------
  *  resched  -  Reschedule processor to highest priority eligible process
  *------------------------------------------------------------------------
@@ -17,6 +20,7 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 {
 	struct procent *ptold;	/* Ptr to table entry for old process	*/
 	struct procent *ptnew;	/* Ptr to table entry for new process	*/
+    pri16 oldprio;
 
 	/* If rescheduling is deferred, record attempt and return */
 
@@ -32,6 +36,16 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
     /* Calculating CPU time used by the old process*/
     ptold->prcpumsec += clktimemsec - ptold->prctxswintime;
 
+    /**
+     * Updating old proess with new priority.*/
+    oldprio = ptold->prprio;
+    if(currpid != 0 && timescliceconsumed == 0){
+       ptold->prprio = tsdtab[oldprio].ts_slpret;
+    } 
+    else {
+        ptold->prprio = tsdtab[oldprio].ts_tqexp;
+        timescliceconsumed = 0;
+    }
 	if (ptold->prstate == PR_CURR) {  /* Process remains eligible */
         if (LAB2COND){
 
@@ -65,7 +79,9 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
             }
         }
         else {
+            /* kprintf("\nptold->prprio = %d, firstkey: %d",ptold->prprio, firstkey(readylist)); */
             if (ptold->prprio > firstkey(readylist)) {
+                preempt = tsdtab[ptold->prprio].ts_quantum;
 			    return;
 		    }
         }
@@ -73,15 +89,17 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 		/* Old process will no longer remain current */
 
 		ptold->prstate = PR_READY;
-		insert(currpid, readylist, ptold->prprio);
+		mltfbq_insert(currpid, readylist, ptold->prprio);
 	}
 
 	/* Force context switch to highest priority ready process */
 
-	currpid = dequeue(readylist);
-	ptnew = &proctab[currpid];
+	currpid = mltfbq_dequeue(readylist);
+    /* kprintf("\n currpid = %d",currpid); */
+	
+    ptnew = &proctab[currpid];
 	ptnew->prstate = PR_CURR;
-	preempt = QUANTUM;		/* Reset time slice for process	*/
+	preempt = tsdtab[ptnew->prprio].ts_quantum;		/* Reset time slice for process	*/
     
     /* Setting the context time in variable for the new process to keep track of the CPU cycles consumed by this process*/
     ptnew->prctxswintime = clktimemsec;
