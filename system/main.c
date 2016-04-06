@@ -16,7 +16,7 @@ extern long host2netlc(long);
 
 extern void app_unlim(void);
 extern void app_lim(void);
-
+extern void lab3q3t2(void);
 int victimglobal = 0;
 int32 lab2flag = 6; // Flag to get different implementation for different parts of question.
 // Set it to 4 for Part 4 and 5 for part 5. Anything else is for Part 3.
@@ -35,8 +35,16 @@ void homework3()
     /* lab2q4t3(); */
     /* Test case for Prob 5. */
     /* lab2q5t1(); */
-    lab3q4t1();
+   
+    /* Test cases for lab 3 */
+    /* lab3q4t1(); */
     /* lab3q4t2(); */
+    /* lab3q4t3(); */
+    /* lab3q3t1(); */
+    lab3q3t2();
+    /* lab3q4t2(); */
+    /* lab3q4t3(); */
+    /* lab3q4t4(); */
 }
 
 process	main(void)

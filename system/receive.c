@@ -24,10 +24,12 @@ umsg32	receive(void)
 	prptr->prhasmsg = FALSE;	/* Reset message flag		*/
     
     while((nextsendr = receiverq_dequeue(currpid)) != EMPTY) {
-        kprintf("\n Receiver blocked sources. Next sendr: %d", nextsendr);
-        if (proctab[nextsendr].prstate == PR_SLEEP) {
+        if (proctab[nextsendr].sndflag == FALSE) {
+            continue;
+        }
+        else if (proctab[nextsendr].prstate == PR_SLEEP) {
+            kprintf("\n Receiving from PID: %d", nextsendr);
             prptr->prmsg = proctab[nextsendr].sndmsg;
-            kprintf("\n Message: %d", prptr->prmsg);
             prptr->prhasmsg = TRUE;
 
             proctab[nextsendr].sndflag = FALSE;
@@ -35,8 +37,8 @@ umsg32	receive(void)
             unsleep(nextsendr);
             ready(nextsendr);
         } else if (proctab[nextsendr].prstate == PR_SEND) {
+            kprintf("\n Receiving from PID: %d", nextsendr);
             prptr->prmsg = proctab[nextsendr].sndmsg;
-            kprintf("\n Message: %d", prptr->prmsg);
             prptr->prhasmsg = TRUE;
 
             proctab[nextsendr].sndflag = FALSE;

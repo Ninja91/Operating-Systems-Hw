@@ -4,7 +4,7 @@ void iobound(int32 loop1, int32 loop2, int32 sleep_time) {
     int32 i,j, alu_calc;
 
     for (i = loop1; i; i--) {
-        for (j = loop1; j; j--) {
+        for (j = loop2; j; j--) {
             sleepms(sleep_time);
         }
 

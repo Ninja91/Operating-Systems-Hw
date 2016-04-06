@@ -23,8 +23,10 @@ syscall	sendbt(
 
 	prptr = &proctab[pid];
 
-    if ((prptr->prstate != PR_FREE) && !prptr->prhasmsg) {
-        kprintf("\nStoring message");
+    if (wait < 0) {
+            return SYSERR;
+    } 
+    else if ((prptr->prstate != PR_FREE) && !prptr->prhasmsg) {
     	prptr->prmsg = msg;		/* Deliver message		*/
 	    prptr->prhasmsg = TRUE;		/* Indicate message is waiting	*/
     }
@@ -39,22 +41,14 @@ syscall	sendbt(
             proctab[currpid].sndflag = FALSE;
             restore(mask);
             return SYSERR;
-    } else if (wait < 0) {
-        return SYSERR;
-    } else {
-        kprintf("\nSending blocking");
+    } 
+    else {
             proctab[currpid].sndmsg = msg;
             proctab[currpid].sndflag = TRUE;
             proctab[currpid].prstate = PR_SEND;
 
             receiverq_enqueue(pid);
             resched();
-            
-            if (prptr->prhasmsg) {
-                proctab[currpid].sndflag = FALSE;
-                restore(mask);
-                return SYSERR;
-            }
 	}
 
 	/* If recipient waiting or in timed-wait make it ready */
