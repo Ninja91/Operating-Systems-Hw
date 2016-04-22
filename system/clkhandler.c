@@ -1,7 +1,7 @@
 /* clkhandler.c - clkhandler */
 
 #include <xinu.h>
-
+#include <alrm_queue.h>
 /*------------------------------------------------------------------------
  * clkhandler - high level clock interrupt handler
  *------------------------------------------------------------------------
@@ -10,7 +10,7 @@ extern int timescliceconsumed;
 void	clkhandler()
 {
 	static	uint32	count1000 = 1000;	/* Count to 1000 ms	*/
-
+    struct procent *currpr = &proctab[currpid];
 	/* Decrement the ms counter, and see if a second has passed */
 
     /* Variable to count time in msec */
@@ -26,6 +26,21 @@ void	clkhandler()
 		count1000 = 1000;
 	}
 
+	/** SigxCpu case*/
+    /* if (proctab[currpid]->hassigxcpu == TRUE) */ 
+    /*     kprintf("\nPID: %d\n sigarg %d\n",currpid, proctab[currpid]sigarg); */
+	if(proctab[currpid].hassigxcpu == TRUE && (--(proctab[currpid].sigarg)) <= 0) {
+		proctab[currpid].hassigxcpu = FALSE;
+		proctab[currpid].regcbfuncptr();
+	}
+	/* Handle processes in alarm queue if any exist */
+
+	if(!alrm_isempty(alrmq)) {
+
+		if((--alrm_queuetab[alrm_firstid(alrmq)].qkey) <= 0) {
+			alrm_wakeup();
+		}
+	}
 	/* Handle sleeping processes if any exist */
 
 	if(!isempty(sleepq)) {

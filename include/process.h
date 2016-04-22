@@ -61,6 +61,12 @@ struct procent {		/* Entry in the process table		*/
     uint32 prctxswintime ; /* CPU Time used by the process */
     uint32 prcpu_wait_ratio ; /* Proportion of CPU Time waited by the process */
 
+    bool8 hascbfunct; /* flag for registering callback and sig recv*/
+    bool8 hassigxcpu; /* flag for MYSIGXCPU signalling case*/
+    bool8 hassigalrm; /*flag for MYSIGALRM signalling case*/
+    int (*regcbfuncptr)(); /*The call back funcion which will be called for signalling/ callback purpose*/
+    uint32 sigarg;  /* Versatile argument used foe signal handling*/
+
     umsg32 sndmsg;
     bool8 sndflag;
 };

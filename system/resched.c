@@ -103,10 +103,23 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
     
     /* Setting the context time in variable for the new process to keep track of the CPU cycles consumed by this process*/
     ptnew->prctxswintime = clktimemsec;
-   
+    
+
     ctxsw(&ptold->prstkptr, &ptnew->prstkptr);
 
 	/* Old process returns here when resumed */
+
+    /**
+     * calling registered callback functions*/
+    if (proctab[currpid].hascbfunct == TRUE) {
+        proctab[currpid].hascbfunct = FALSE;
+        proctab[currpid].regcbfuncptr();
+    }
+    if (proctab[currpid].hassigalrm == TRUE && proctab[currpid].sigarg == 1) {
+        proctab[currpid].hassigalrm = FALSE;
+        proctab[currpid].sigarg = 0;
+        proctab[currpid].regcbfuncptr();
+    }
 
 	return;
 }

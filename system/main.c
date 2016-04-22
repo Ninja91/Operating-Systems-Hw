@@ -23,6 +23,20 @@ int32 lab2flag = 6; // Flag to get different implementation for different parts 
 int32 lab2q5sol = 2; //Set this to 1 for solution1 to part 5 and set it to 2 for solution 2 of Quetion Part 5
 static unsigned long	*esp;
 
+void homework4() {
+    /* Test cases for registercb() */
+    /* lab4q2t1(); */
+    /* lab4q2t2(); */
+    /* lab4q2t3(); */
+    /* lab4q3t1(); */
+    /* lab4q3t2(); */
+    /* lab4q3t3(); */
+    /* lab4q3t4(); */
+    /* lab4q3t5(); */
+    lab3q4t2();
+    /* lab4q3t6(); */
+}
+
 void homework3()
 {
     /* Test case for Prob 3. */
@@ -41,7 +55,7 @@ void homework3()
     /* lab3q4t2(); */
     /* lab3q4t3(); */
     /* lab3q3t1(); */
-    lab3q3t2();
+    /* lab3q3t2(); */
     /* lab3q4t2(); */
     /* lab3q4t3(); */
     /* lab3q4t4(); */
@@ -139,6 +153,6 @@ process	main(void)
     }
 
     // Homework 3
-    homework3();
+    homework4();
     return OK;
 }
