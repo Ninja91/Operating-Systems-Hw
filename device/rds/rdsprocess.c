@@ -43,6 +43,7 @@ void	rdsprocess (
 		/* Build a read request message for the server */
 
 		msg.rd_type = htons(RD_MSG_RREQ);	/* Read request	*/
+		msg.rd_blk = htonl(bptr->rd_blknum);
 		msg.rd_status = htons(0);
 		msg.rd_seq = 0;		/* Rdscomm fills in an entry	*/
 		idto = msg.rd_id;
@@ -133,7 +134,7 @@ void	rdsprocess (
 		/* Build a write request message for the server */
 
 		msg.rd_type = htons(RD_MSG_WREQ);	/* Write request*/
-		msg.rd_blk = bptr->rd_blknum;
+		msg.rd_blk = htonl(bptr->rd_blknum);
 		msg.rd_status = htons(0);
 		msg.rd_seq = 0;		/* Rdscomb fills in an entry	*/
 		idto = msg.rd_id;
@@ -203,5 +204,6 @@ void	rdsprocess (
 		signal(rdptr->rd_availsem);
 		break;
 	   }
+	   sleepms(1);
 	}
 }

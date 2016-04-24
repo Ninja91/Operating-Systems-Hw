@@ -16,7 +16,6 @@
 #define	PR_SUSP		5	/* Process is suspended			*/
 #define	PR_WAIT		6	/* Process is on semaphore queue	*/
 #define	PR_RECTIM	7	/* Process is receiving with timeout	*/
-#define PR_SEND     8
 
 /* Miscellaneous process definitions */
 
@@ -44,9 +43,6 @@
 struct procent {		/* Entry in the process table		*/
 	uint16	prstate;	/* Process state: PR_CURR, etc.		*/
 	pri16	prprio;		/* Process priority			*/
-
-	pri16	initprio;		/* Initial priority	at the time of process creation		*/
-
 	char	*prstkptr;	/* Saved stack pointer			*/
 	char	*prstkbase;	/* Base of run time stack		*/
 	uint32	prstklen;	/* Stack length in bytes		*/
@@ -56,13 +52,6 @@ struct procent {		/* Entry in the process table		*/
 	umsg32	prmsg;		/* Message sent to this process		*/
 	bool8	prhasmsg;	/* Nonzero iff msg is valid		*/
 	int16	prdesc[NDESC];	/* Device descriptors for process	*/
-
-    uint32 prcpumsec; /* CPU Time used by the process */
-    uint32 prctxswintime ; /* CPU Time used by the process */
-    uint32 prcpu_wait_ratio ; /* Proportion of CPU Time waited by the process */
-
-    umsg32 sndmsg;
-    bool8 sndflag;
 };
 
 /* Marker for the top of a process stack (used to help detect overflow)	*/

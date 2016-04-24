@@ -1,6 +1,9 @@
 /* in file addargs.c */
 extern	status	addargs(pid32, int32, int32[], int32,char *, void *);
 
+/* in file allocate_bs.c */
+extern	bsd_t	allocate_bs(unsigned int);
+
 /* in file arp.c */
 
 extern	void	arp_init();
@@ -42,6 +45,9 @@ extern	void	clkdisp(void);
 
 extern	syscall	close(did32);
 
+/* in file close_bs.c */
+extern	bsd_t	close_bs(bsd_t);
+
 /* in file control.c */
 
 extern	syscall	control(did32, int32, int32, int32);
@@ -53,6 +59,9 @@ extern	pid32	create(void *, uint32, pri16, char *, uint32, ...);
 /* in file ctxsw.S */
 
 extern	void	ctxsw(void *, void *);
+
+/* in file deallocate_bs.c */
+extern	bsd_t	deallocate_bs(bsd_t);
 
 /* in file dhcp.c */
 
@@ -116,6 +125,9 @@ extern	syscall	freebuf(char *);
 
 /* in file freemem.c */
 extern	syscall	freemem(char *, uint32);
+
+/* in file get_bs.c */
+extern	syscall	get_bs(bsd_t, uint32);
 
 /* in file getbuf.c */
 extern	char	*getbuf(bpid32);
@@ -337,6 +349,9 @@ extern	qid16	newqueue(void);
 /* in file open.c */
 extern	syscall	open(did32, char *, char *);
 
+/* in file open_bs.c */
+extern	bsd_t	open_bs(bsd_t);
+
 /* in file panic.c */
 extern	void	panic(char *);
 
@@ -349,6 +364,9 @@ extern	void	pdumph(struct netpacket *);
 
 /* in file platinit.c */
 extern	void	platinit();
+
+/* in file psinit.c */
+extern	int32	psinit(void);
 
 /* in file ptclear.c */
 extern	void	_ptclear(struct ptentry *, uint16, int32 (*)(int32));
@@ -423,6 +441,12 @@ extern	status	rdscomm(struct rd_msg_hdr *, int32, struct rd_msg_hdr *,
 
 /* in file rdsprocess.c */
 extern	void	rdsprocess(struct rdscblk *);
+
+/* in file read_bs.c */
+extern	syscall	read_bs(char *, bsd_t, int32);
+
+/* in file release_bs.c */
+extern	syscall	release_bs(bsd_t);
 
 /* in file sdmcclose.c */
 extern	devcall	sdmcclose(struct dentry *);
@@ -635,6 +659,9 @@ extern	syscall	wait(sid32);
 
 /* in file wakeup.c */
 extern	void	wakeup(void);
+
+/* in file write_bs.c */
+extern	syscall	write_bs(char *, bsd_t, int32);
 
 /* in file write.c */
 extern	syscall	write(did32, char *, uint32);

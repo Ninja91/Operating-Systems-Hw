@@ -92,6 +92,8 @@ devcall	rdsinit (
 
 	/* Create a communication process */
 
+	rdptr->rd_comproc = -1;
+	/*
 	rdptr->rd_comproc = create(rdsprocess, RD_STACK, RD_PRIO,
 						"rdsproc", 1, rdptr);
 
@@ -99,6 +101,7 @@ devcall	rdsinit (
 		panic("Cannot create remote disk process");
 	}
 	resume(rdptr->rd_comproc);
+	*/
 
 	return OK;
 }

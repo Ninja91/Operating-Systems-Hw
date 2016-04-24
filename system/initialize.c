@@ -4,23 +4,9 @@
 
 #include <xinu.h>
 #include <string.h>
-#include <lab2.h>
-#include <ts_disptb.h>
-#include <multilevelfbq.h>
-#include <receiverq.h>
-
-/* Handling the rescheduler changes for different parts of the question*/
-#ifdef LAB2_HEADER
-#define LAB2COND (lab2flag == 4 || lab2flag == 5)
-#else
-#define LAB2COND 0
-#endif
 
 extern	void	start(void);	/* Start of Xinu code			*/
 extern	void	*_end;		/* End of Xinu code			*/
-
-/* TS scheduler data structure */
-struct ts_disptb tsdtab[NOF_PRIOIRITIES];
 
 /* Function prototypes */
 
@@ -28,7 +14,6 @@ extern	void main(void);	/* Main is the first process created	*/
 extern	void xdone(void);	/* System "shutdown" procedure		*/
 static	void sysinit(); 	/* Internal system initialization	*/
 extern	void meminit(void);	/* Initializes the free memory list	*/
-extern void mywelcomemsg(void);// to use the welcome msg printing function
 
 /* Declarations of major kernel variables */
 
@@ -41,6 +26,8 @@ struct	memblk	memlist;	/* List of free memory blocks		*/
 int	prcount;		/* Total number of live processes	*/
 pid32	currpid;		/* ID of currently executing process	*/
 
+bool8   PAGE_SERVER_STATUS;    /* Indicate the status of the page server */
+sid32   bs_init_sem;
 /*------------------------------------------------------------------------
  * nulluser - initialize the system and become the null process
  *
@@ -87,23 +74,29 @@ void	nulluser()
 	kprintf("           [0x%08X to 0x%08X]\n\n",
 		(uint32)&data, (uint32)&ebss - 1);
 
+	/* Create the RDS process */
+
+	rdstab[0].rd_comproc = create(rdsprocess, RD_STACK, RD_PRIO,
+					"rdsproc", 1, &rdstab[0]);
+	if(rdstab[0].rd_comproc == SYSERR) {
+		panic("Cannot create remote disk process");
+	}
+	resume(rdstab[0].rd_comproc);
+
 	/* Enable interrupts */
 
 	enable();
-    /*
-     * Prints the welcome message */
-    mywelcomemsg();
+
 	/* Create a process to execute function main() */
-    kprintf("\n Just before main creation");
+
 	resume (
-	   create((void *)main, INITSTK, 11, "Main process", 0,
+	   create((void *)main, INITSTK, INITPRIO, "Main process", 0,
            NULL));
 
 	/* Become the Null process (i.e., guarantee that the CPU has	*/
 	/*  something to run when no other process is ready to execute)	*/
 
 	while (TRUE) {
-        //pause();  //Alternate way to idle insteaad of using an infinite while loop
 		;		/* Do nothing */
 	}
 
@@ -151,28 +144,14 @@ static	void	sysinit()
 		prptr->prname[0] = NULLCH;
 		prptr->prstkbase = NULL;
 		prptr->prprio = 0;
-        prptr->prcpu_wait_ratio = 0; // Initializing waits at creation for each process to 0
 	}
 
 	/* Initialize the Null process entry */	
 
 	prptr = &proctab[NULLPROC];
 	prptr->prstate = PR_CURR;
-  
-    /* Setting the null process initial priority as the highest so that all other processes can run before it*/
-    prptr->initprio = MAXKEY;
-    prptr->prcpumsec = 0;
-    prptr->prctxswintime = 0;
-    
-    /* Reversing the priority order in case of Dynamic Process Scheduling (Q4 and Q5.) */
-    if (LAB2COND) {
-        prptr->prprio = MAXKEY;// prptr->initprio + prptr->prcpumsec; //Highest int16 value. The Null process must take the lowest priority.
-    }
-    else {
-        prptr->prprio = MINPRIO;
-    }
-
-    strncpy(prptr->prname, "prnull", 7);
+	prptr->prprio = 0;
+	strncpy(prptr->prname, "prnull", 7);
 	prptr->prstkbase = getstk(NULLSTK);
 	prptr->prstklen = NULLSTK;
 	prptr->prstkptr = 0;
@@ -194,8 +173,6 @@ static	void	sysinit()
 	/* Create a ready list for processes */
 
 	readylist = newqueue();
-    initialize_mltfbq();
-    init_recieverq();
 
 	/* Initialize the real time clock */
 
@@ -204,6 +181,10 @@ static	void	sysinit()
 	for (i = 0; i < NDEVS; i++) {
 		init(i);
 	}
+
+        PAGE_SERVER_STATUS = PAGE_SERVER_INACTIVE;
+        bs_init_sem = semcreate(1);
+
 	return;
 }
 

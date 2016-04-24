@@ -27,8 +27,7 @@
 /* Messages shell displays for user */
 
 #define SHELL_PROMPT	"xsh $ "	/* Command prompt		*/
-/*Modified the Welcome message by modifiying the following macro*/
-#define SHELL_STRTMSG	"Welcome to Xinu! This version belongs to Nitin Jain (jain117@purdue.edu)\n"/* Welcome message	*/
+#define SHELL_STRTMSG	"Welcome to Xinu!\n"/* Welcome message		*/
 #define SHELL_EXITMSG	"Shell closed\n"/* Shell exit message		*/
 #define SHELL_SYNERRMSG	"Syntax error\n"/* Syntax error message		*/
 #define SHELL_CREATMSG	"Cannot create process\n"/* command error	*/
