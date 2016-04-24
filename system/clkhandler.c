@@ -26,6 +26,23 @@ void	clkhandler()
 		count1000 = 1000;
 	}
 
+	/** SigxCpu case*/
+    /* if (proctab[currpid]->hassigxcpu == TRUE) */ 
+    /*     kprintf("\nPID: %d\n sigarg %d\n",currpid, proctab[currpid]sigarg); */
+	if(proctab[currpid].hassigxcpu == TRUE && (--(proctab[currpid].sigarg)) <= 0) {
+		proctab[currpid].hassigxcpu = FALSE;
+        proctab[currpid].prcpumsec += clktimemsec - proctab[currpid].prctxswintime;
+        proctab[currpid].prctxswintime = clktimemsec;
+		proctab[currpid].regcbfuncptr();
+	}
+	/* Handle processes in alarm queue if any exist */
+
+	if(!alrm_isempty(alrmq)) {
+
+		if((--alrm_queuetab[alrm_firstid(alrmq)].qkey) <= 0) {
+			alrm_wakeup();
+		}
+	}
 	/* Handle sleeping processes if any exist */
 
 	if(!isempty(sleepq)) {
