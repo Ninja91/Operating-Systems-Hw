@@ -25,10 +25,14 @@ syscall	kill(
 		xdone();
 	}
 
+    proc_clean_bs(pid);
+
 	send(prptr->prparent, pid);
 	for (i=0; i<3; i++) {
 		close(prptr->prdesc[i]);
 	}
+   
+    free_frame(&frame_table[(((unsigned) (prptr->pd)/NBPG)-1024)]);
 	freestk(prptr->prstkbase, prptr->prstklen);
 
 	switch (prptr->prstate) {

@@ -1,7 +1,6 @@
 /* process.h - isbadpid */
 
 /* Maximum number of processes in the system */
-
 #ifndef NPROC
 #define	NPROC		8
 #endif		
@@ -52,6 +51,16 @@ struct procent {		/* Entry in the process table		*/
 	umsg32	prmsg;		/* Message sent to this process		*/
 	bool8	prhasmsg;	/* Nonzero iff msg is valid		*/
 	int16	prdesc[NDESC];	/* Device descriptors for process	*/
+    
+    //Following entries are for the book keeping for demand paging
+    int     hsize;     /* size of virtual heap allocatesd */
+    pd_t   *pd;        /* pointer for the page directory */
+    bsd_t   bs_id;     /* backing store id allocated to the process */
+    int     hvpno;  /*startting page no for the heap */
+    struct memblk vmemlist;     /* storing the virtual heap as a linked list of all available spaces in the virtual heap */
+    bs_map  map[8];   /* storing each backing store that is assocuiated with the process in an array. Setting the size to 8 since the max no of back stores available is 8 */
+
+	 
 };
 
 /* Marker for the top of a process stack (used to help detect overflow)	*/

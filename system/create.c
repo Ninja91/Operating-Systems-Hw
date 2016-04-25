@@ -96,14 +96,20 @@ pid32	create(
 	*--saddr = 0;			/* %esi */
 	*--saddr = 0;			/* %edi */
 	*pushsp = (unsigned long) (prptr->prstkptr = (char *)saddr);
+
+
+    kprintf("Creating PD for the new process\n");
+    prptr->pd = create_pd();
+    if (prptr->pd == NULL) {
+        kprintf("Error in page directory creation\n");
+        return SYSERR;
+    }
+
+
 	restore(mask);
 	return pid;
 }
 
-/*------------------------------------------------------------------------
- *  newpid  -  Obtain a new (free) process ID
- *------------------------------------------------------------------------
- */
 local	pid32	newpid(void)
 {
 	uint32	i;			/* Iterate through all processes*/

@@ -44,61 +44,61 @@ sid32   bs_init_sem;
 
 void	nulluser()
 {	
-	struct	memblk	*memptr;	/* Ptr to memory block		*/
-	uint32	free_mem;		/* Total amount of free memory	*/
-	
-	/* Initialize the system */
-		
-	sysinit();
+    struct	memblk	*memptr;	/* Ptr to memory block		*/
+    uint32	free_mem;		/* Total amount of free memory	*/
 
-	kprintf("\n\r%s\n\n\r", VERSION);
-	
-	/* Output Xinu memory layout */
-	free_mem = 0;
-	for (memptr = memlist.mnext; memptr != NULL;
-						memptr = memptr->mnext) {
-		free_mem += memptr->mlength;
-	}
-	kprintf("%10d bytes of free memory.  Free list:\n", free_mem);
-	for (memptr=memlist.mnext; memptr!=NULL;memptr = memptr->mnext) {
-	    kprintf("           [0x%08X to 0x%08X]\r\n",
-		(uint32)memptr, ((uint32)memptr) + memptr->mlength - 1);
-	}
+    /* Initialize the system */
 
-	kprintf("%10d bytes of Xinu code.\n",
-		(uint32)&etext - (uint32)&text);
-	kprintf("           [0x%08X to 0x%08X]\n",
-		(uint32)&text, (uint32)&etext - 1);
-	kprintf("%10d bytes of data.\n",
-		(uint32)&ebss - (uint32)&data);
-	kprintf("           [0x%08X to 0x%08X]\n\n",
-		(uint32)&data, (uint32)&ebss - 1);
+    sysinit();
 
-	/* Create the RDS process */
+    kprintf("\n\r%s\n\n\r", VERSION);
 
-	rdstab[0].rd_comproc = create(rdsprocess, RD_STACK, RD_PRIO,
-					"rdsproc", 1, &rdstab[0]);
-	if(rdstab[0].rd_comproc == SYSERR) {
-		panic("Cannot create remote disk process");
-	}
-	resume(rdstab[0].rd_comproc);
+    /* Output Xinu memory layout */
+    free_mem = 0;
+    for (memptr = memlist.mnext; memptr != NULL;
+            memptr = memptr->mnext) {
+        free_mem += memptr->mlength;
+    }
+    kprintf("%10d bytes of free memory.  Free list:\n", free_mem);
+    for (memptr=memlist.mnext; memptr!=NULL;memptr = memptr->mnext) {
+        kprintf("           [0x%08X to 0x%08X]\r\n",
+                (uint32)memptr, ((uint32)memptr) + memptr->mlength - 1);
+    }
 
-	/* Enable interrupts */
+    kprintf("%10d bytes of Xinu code.\n",
+            (uint32)&etext - (uint32)&text);
+    kprintf("           [0x%08X to 0x%08X]\n",
+            (uint32)&text, (uint32)&etext - 1);
+    kprintf("%10d bytes of data.\n",
+            (uint32)&ebss - (uint32)&data);
+    kprintf("           [0x%08X to 0x%08X]\n\n",
+            (uint32)&data, (uint32)&ebss - 1);
 
-	enable();
+    /* Create the RDS process */
 
-	/* Create a process to execute function main() */
+    rdstab[0].rd_comproc = create(rdsprocess, RD_STACK, RD_PRIO,
+            "rdsproc", 1, &rdstab[0]);
+    if(rdstab[0].rd_comproc == SYSERR) {
+        panic("Cannot create remote disk process");
+    }
+    resume(rdstab[0].rd_comproc);
 
-	resume (
-	   create((void *)main, INITSTK, INITPRIO, "Main process", 0,
-           NULL));
+    /* Enable interrupts */
 
-	/* Become the Null process (i.e., guarantee that the CPU has	*/
-	/*  something to run when no other process is ready to execute)	*/
+    enable();
 
-	while (TRUE) {
-		;		/* Do nothing */
-	}
+    /* Create a process to execute function main() */
+
+    resume (
+            create((void *)main, INITSTK, INITPRIO, "Main process", 0,
+                NULL));
+
+    /* Become the Null process (i.e., guarantee that the CPU has	*/
+    /*  something to run when no other process is ready to execute)	*/
+
+    while (TRUE) {
+        ;		/* Do nothing */
+    }
 
 }
 
@@ -110,94 +110,108 @@ void	nulluser()
  */
 static	void	sysinit()
 {
-	int32	i;
-	struct	procent	*prptr;		/* Ptr to process table entry	*/
-	struct	sentry	*semptr;	/* Ptr to semaphore table entry	*/
+    int32	i;
+    struct	procent	*prptr;		/* Ptr to process table entry	*/
+    struct	sentry	*semptr;	/* Ptr to semaphore table entry	*/
 
-	/* Platform Specific Initialization */
+    /* Platform Specific Initialization */
 
-	platinit();
+    platinit();
 
-	/* Initialize the interrupt vectors */
+    /* Initialize the interrupt vectors */
 
-	initevec();
-	
-	/* Initialize free memory list */
-	
-	meminit();
+    initevec();
 
-	/* Initialize system variables */
+    /* Initialize free memory list */
 
-	/* Count the Null process as the first process in the system */
+    meminit();
 
-	prcount = 1;
+    /* Initialize system variables */
 
-	/* Scheduling is not currently blocked */
+    /* Count the Null process as the first process in the system */
 
-	Defer.ndefers = 0;
+    prcount = 1;
 
-	/* Initialize process table entries free */
+    /* Scheduling is not currently blocked */
 
-	for (i = 0; i < NPROC; i++) {
-		prptr = &proctab[i];
-		prptr->prstate = PR_FREE;
-		prptr->prname[0] = NULLCH;
-		prptr->prstkbase = NULL;
-		prptr->prprio = 0;
-	}
+    Defer.ndefers = 0;
 
-	/* Initialize the Null process entry */	
+    /* Initialize process table entries free */
 
-	prptr = &proctab[NULLPROC];
-	prptr->prstate = PR_CURR;
-	prptr->prprio = 0;
-	strncpy(prptr->prname, "prnull", 7);
-	prptr->prstkbase = getstk(NULLSTK);
-	prptr->prstklen = NULLSTK;
-	prptr->prstkptr = 0;
-	currpid = NULLPROC;
-	
-	/* Initialize semaphores */
+    for (i = 0; i < NPROC; i++) {
+        prptr = &proctab[i];
+        prptr->prstate = PR_FREE;
+        prptr->prname[0] = NULLCH;
+        prptr->prstkbase = NULL;
+        prptr->prprio = 0;
+    }
 
-	for (i = 0; i < NSEM; i++) {
-		semptr = &semtab[i];
-		semptr->sstate = S_FREE;
-		semptr->scount = 0;
-		semptr->squeue = newqueue();
-	}
+    /* Initialize the Null process entry */	
 
-	/* Initialize buffer pools */
+    prptr = &proctab[NULLPROC];
+    prptr->prstate = PR_CURR;
+    prptr->prprio = 0;
+    strncpy(prptr->prname, "prnull", 7);
+    prptr->prstkbase = getstk(NULLSTK);
+    prptr->prstklen = NULLSTK;
+    prptr->prstkptr = 0;
+    currpid = NULLPROC;
 
-	bufinit();
+    /* Initialize semaphores */
 
-	/* Create a ready list for processes */
+    for (i = 0; i < NSEM; i++) {
+        semptr = &semtab[i];
+        semptr->sstate = S_FREE;
+        semptr->scount = 0;
+        semptr->squeue = newqueue();
+    }
 
-	readylist = newqueue();
+    /* Initialize buffer pools */
 
-	/* Initialize the real time clock */
+    bufinit();
 
-	clkinit();
+    /* Create a ready list for processes */
 
-	for (i = 0; i < NDEVS; i++) {
-		init(i);
-	}
+    readylist = newqueue();
 
-        PAGE_SERVER_STATUS = PAGE_SERVER_INACTIVE;
-        bs_init_sem = semcreate(1);
+    /* Initialize the real time clock */
 
-	return;
+    clkinit();
+
+    for (i = 0; i < NDEVS; i++) {
+        init(i);
+    }
+
+    PAGE_SERVER_STATUS = PAGE_SERVER_INACTIVE;
+    bs_init_sem = semcreate(1);
+
+
+    init_frame_table();
+    init_pg_tab();
+
+    pd_t   * pd;
+    pd = create_pd();
+    prptr->pd = pd;
+    // kprintf("Print pd of null = %d\n",pd);
+    unsigned int m =(unsigned int)(pd)/NBPG;
+    // kprintf("This is passed to set_pdbr %d\n",m);
+    set_PDBR((unsigned int)(pd)/NBPG);
+    set_evec(14, (unsigned long)page_fault);
+    en_paging();
+
+    return;
 }
 
 int32	stop(char *s)
 {
-	kprintf("%s\n", s);
-	kprintf("looping... press reset\n");
-	while(1)
-		/* Empty */;
+    kprintf("%s\n", s);
+    kprintf("looping... press reset\n");
+    while(1)
+        /* Empty */;
 }
 
 int32	delay(int n)
 {
-	DELAY(n);
-	return OK;
+    DELAY(n);
+    return OK;
 }

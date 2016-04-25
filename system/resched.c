@@ -41,7 +41,10 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 	ptnew = &proctab[currpid];
 	ptnew->prstate = PR_CURR;
 	preempt = QUANTUM;		/* Reset time slice for process	*/
-	ctxsw(&ptold->prstkptr, &ptnew->prstkptr);
+
+   // kprintf("In resched print the value passed to PDBR function is %d\n", ((unsigned int)(ptnew->pd)/NBPG));   
+    set_PDBR(((unsigned int)(ptnew->pd)/NBPG));
+    ctxsw(&ptold->prstkptr, &ptnew->prstkptr);
 
 	/* Old process returns here when resumed */
 

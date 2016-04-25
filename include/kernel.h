@@ -72,3 +72,8 @@ extern	qid16	readylist;	/* global ID for list of ready processes*/
 syscall	kprintf(char *fmt, ...);
 syscall	kputc(byte);
 syscall	kgetc(void);
+
+//define page replacement policy
+int page_replacement_policy; 
+
+extern unsigned int no_of_page_faults;

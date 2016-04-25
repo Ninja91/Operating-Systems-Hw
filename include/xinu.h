@@ -2,7 +2,7 @@
 
 #include <kernel.h>
 #include <conf.h>
-#include <process.h>
+
 #include <queue.h>
 #include <resched.h>
 #include <mark.h>
@@ -31,7 +31,7 @@
 #include <name.h>
 #include <shell.h>
 #include <date.h>
-#include <prototypes.h>
+
 #include <delay.h>
 #include <pci.h>
 #include <quark_eth.h>
@@ -42,3 +42,5 @@
 #include <string.h>
 #include <paging.h>
 #include <page_server.h>
+#include <process.h>
+#include <prototypes.h>
