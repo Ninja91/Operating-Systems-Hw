@@ -11,9 +11,9 @@ pid32	vcreate(
 {
     intmask       mask;
     pid32         pid;
+    int bs_id;
     struct procent * pptr;
 
-    int bs_id;
     mask   = disable();
 
     pid = create(procaddr, ssize, priority, name, nargs);
@@ -25,20 +25,22 @@ pid32	vcreate(
         restore(mask);
         return SYSERR;
     }
-    bstab[bs_id].status = BS_USED;
-    bstab[bs_id].isvheap = 1;
     bstab[bs_id].npages = hsize_in_pages;
+    bstab[bs_id].status = BS_USED;
+    
     bstab[bs_id].maps   = NULL;
     bstab[bs_id].frames = NULL;
+    
+    bstab[bs_id].isvheap = 1;
 
-    bs_add_mapping(bs_id, pid, 4096, hsize_in_pages);
+    add_bs_map(bs_id, pid, 4096, hsize_in_pages);
 
     pptr->bs_id  = bs_id;
     pptr->hvpno = 4096;  
     pptr->hsize = hsize_in_pages;
 
-    pptr->vmemlist.mnext = (struct	memblk *) (4096*NBPG);
     pptr->vmemlist.mlength = 200*NBPG;
+    pptr->vmemlist.mnext = (struct	memblk *) (4096*NBPG);
 
     restore(mask);
     return pid;

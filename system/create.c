@@ -98,7 +98,7 @@ pid32	create(
 	*pushsp = (unsigned long) (prptr->prstkptr = (char *)saddr);
 
 
-    kprintf("Creating PD for the new process\n");
+    kprintf("Creating PD for the process%d (%s)\n", pid, name);
     prptr->pd = create_pd();
     if (prptr->pd == NULL) {
         kprintf("Error in page directory creation\n");

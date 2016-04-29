@@ -43,6 +43,7 @@ void	resched(void)		/* Assumes interrupts are disabled	*/
 	preempt = QUANTUM;		/* Reset time slice for process	*/
 
    // kprintf("In resched print the value passed to PDBR function is %d\n", ((unsigned int)(ptnew->pd)/NBPG));   
+    kprintf("\nEntering process %d", currpid);
     set_PDBR(((unsigned int)(ptnew->pd)/NBPG));
     ctxsw(&ptold->prstkptr, &ptnew->prstkptr);
 

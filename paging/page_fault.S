@@ -12,7 +12,7 @@ page_fault:
                 cli                     #clear interrupts 
                 popl pferr              #store error code
                 pushal                  # Save registers
-                call    pf_handler      # Call high level handler
+                call    pg_fault_handler      # Call high level handler
                 popal                   # Restore registers
                 sti                     # Restore interrupt status
                 iret                    # Return from interrupt

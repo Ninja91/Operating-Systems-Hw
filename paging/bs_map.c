@@ -3,16 +3,16 @@
 #include <xinu.h>
 
 
-int bs_add_mapping(bsd_t bsid, int pid, int vpno, int npages) {
+int add_bs_map(bsd_t bsid, int pid, int vpno, int npages) {
     bs_map * bsmapptr;
 
     bsmapptr = (bs_map *) getmem(sizeof(bs_map));
     bsmapptr->bs_id   = bsid;
     bsmapptr->pid    = pid;
-    bsmapptr->vpno   = vpno;
     bsmapptr->npages = npages;  
-    bsmapptr->next   = bstab[bsid].maps;
     bstab[bsid].maps    = bsmapptr;
+    bsmapptr->vpno   = vpno;
+    bsmapptr->next   = bstab[bsid].maps;
     return OK;
 }
 
@@ -77,7 +77,7 @@ int clean_frame_bs(bs_map * bsm) {
 
     for (bs_id = bsm->bs_id, prev_node = NULL, cur_node = bstab[bs_id].frames; cur_node != NULL; prev_node = cur_node, cur_node = cur_node->bs_frames_q) {
       if (cur_node->bs_pg < bsm->npages)
-            frame_refcount_dec(cur_node);
+            dec_frame_refcount(cur_node);
     } 
     return OK;
 }

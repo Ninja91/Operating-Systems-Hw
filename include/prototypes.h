@@ -15,15 +15,14 @@ pt_t   *create_pt();
 int     free_pd(pd_t * pd);
 int     free_pt(pt_t *pt);
 int     free_page(pt_t *pt);
-int remove_pg_link(int);
 int init_bs_tab();
 int proc_clean_bs(int pid);
 int clean_frame_bs(bs_map *) ;
-int bs_add_mapping(bsd_t, int ,int , int);
+int add_bs_map(bsd_t, int ,int , int);
 int delete_mapping_bs(int, int );  
 bs_map * find_mapping(int, int);
 
-int pf_handler();
+int pg_fault_handler();
 
 //hooks
 void hook_ptable_create(unsigned int);
@@ -33,20 +32,20 @@ void hook_pswap_out(unsigned int pagenum, int framenb);
 int get_faults();
 
 
-//functions related to frame mangement
+/* Frame Managment*/
 int init_frame_table();
 frame_t  *create_frame();
 int free_frame(frame_t * frame);
 frame_t * find_frame_bs(int bs_id, int bsindex);
-int frame_refcount_dec(frame_t * frame);
+int dec_frame_refcount(frame_t * frame);
 frame_t * remove_frame();
-frame_t * frame_get_fifo();
-int remove_frame_list();
+frame_t * fifo_dequeue_bs_frame();
+int rm_all_free_frame();
 int remove_frame_frm_bs(void *);
-frame_t * frame_find_bspage(int,int); 
+frame_t * lookup_frame_mappedto_bspage(int,int); 
 
 //functions related to register operations
-void en_paging();
+void enable_paging();
 
 unsigned long read_cr0();
 unsigned long read_cr2();

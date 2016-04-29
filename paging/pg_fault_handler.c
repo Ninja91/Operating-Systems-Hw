@@ -1,6 +1,6 @@
 #include <xinu.h>
 
-int pf_handler()
+int pg_fault_handler()
 {
     //kprintf("Page Fault has occured\n");
     intmask mask; 
@@ -22,9 +22,10 @@ int pf_handler()
     pt_offset = vaddress->pt_offset;
     pg_offset = vaddress->pg_offset;
 
-
+#ifdef LOGGING_ON_PF
     kprintf("The Page fault has occured.\n");
     get_faults();
+#endif
     hook_pfault((char *)(cr2));
 
     pd_t *pd;
@@ -34,6 +35,7 @@ int pf_handler()
     bs_map * bsm;
     bsm = find_mapping(currpid, ((unsigned int)(cr2)/NBPG));
     if (bsm== NULL) {
+        kprintf("\n\nKilling process in page fault handler\n\n");
         kill(currpid);
         restore(mask);
         return SYSERR;
@@ -66,10 +68,19 @@ int pf_handler()
 
     }
 
-    frame = frame_find_bspage(bstab[bsm->bs_id].bs_id, bsoff);
+    frame = lookup_frame_mappedto_bspage(bstab[bsm->bs_id].bs_id, bsoff);
+
+
+	 pt[pt_offset].pt_pres  = 1;
+	 pt[pt_offset].pt_write = 1;
+	 pt[pt_offset].pt_base  = 1024+(frame->frame_id);
+	 ptframe = &frame_table[(((unsigned int)(pt)/4096)-1024)];
+	 ptframe->reference++;
+
     if (frame != NULL) 
     {
         frame->reference_count++;
+        frame->accessed = 1;
     }
     else 
     {
@@ -85,6 +96,7 @@ int pf_handler()
         frame->type   = FRAME_BS;
         frame->bs_id   = bstab[bsm->bs_id].bs_id;
         frame->reference_count = 1;
+        frame->accessed = 1;
 
         frame->bs_frames_q = bstab[bsm->bs_id].frames;
         bstab[bsm->bs_id].frames = frame;
@@ -93,18 +105,17 @@ int pf_handler()
     }
 
 
-    pt[pt_offset].pt_pres  = 1;
-    pt[pt_offset].pt_write = 1;
-    pt[pt_offset].pt_base  = FRAME0+(frame->frame_no);
+    /* pt[pt_offset].pt_pres  = 1; */
+    /* pt[pt_offset].pt_write = 1; */
+    /* pt[pt_offset].pt_base  = FRAME0+(frame->frame_no); */
 
 
-    ptframe = &frame_table[(((unsigned int)(pt)/NBPG)-FRAME0)];
-    ptframe->reference_count++;
+    /* ptframe = &frame_table[(((unsigned int)(pt)/NBPG)-FRAME0)]; */
+    /* ptframe->reference_count++; */
 
     set_PDBR(((unsigned int)(pd)/NBPG));
 
     restore(mask);
     return OK;
-
 }
 

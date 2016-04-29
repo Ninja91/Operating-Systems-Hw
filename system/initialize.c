@@ -197,7 +197,7 @@ static	void	sysinit()
     // kprintf("This is passed to set_pdbr %d\n",m);
     set_PDBR((unsigned int)(pd)/NBPG);
     set_evec(14, (unsigned long)page_fault);
-    en_paging();
+    enable_paging();
 
     return;
 }

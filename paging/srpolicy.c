@@ -1,12 +1,12 @@
 #include <xinu.h>
 int  srpolicy(
         int polcy) {  
-    if(policy!=3 && policy!=4) {
-        kprrintf("\n Error replaccement ploicy is not correct");
+    if(polcy!=3 && polcy!=4) {
+        kprintf("\n Error replaccement ploicy is not correct");
         return SYSERR;
     }
 
-    page_replacement_policy = policy;
+    page_replacement_policy = polcy;
     return OK;
 
 }

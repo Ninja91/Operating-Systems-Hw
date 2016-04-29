@@ -26,13 +26,15 @@ syscall	kill(
 	}
 
     proc_clean_bs(pid);
+    hook_ptable_delete(((unsigned int)(prptr->pd)/NBPG));
+    /* free_frame(&frame_table[(((unsigned) (prptr->pd)/NBPG)-FRAME0)]); */
+    free_pd(proctab[pid].pd);
 
 	send(prptr->prparent, pid);
 	for (i=0; i<3; i++) {
 		close(prptr->prdesc[i]);
 	}
    
-    free_frame(&frame_table[(((unsigned) (prptr->pd)/NBPG)-1024)]);
 	freestk(prptr->prstkbase, prptr->prstklen);
 
 	switch (prptr->prstate) {

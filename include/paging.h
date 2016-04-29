@@ -3,17 +3,25 @@
 //typedef unsigned int	 bsd_t;
 
 //data structures to maintain frames
-typedef struct frameT{
-        int frame_no;  /*unique number associated with each frame */
-        int reference_count; /*references for a frame */
-        struct frameT * fifo_node; /*used for fifo replacement */
-        int accessed; /*if frame is accessed  */
-        int type; /*type of the frame i.e the page is used for page_table, page directory or it is mapped in the bs_store */
-        int status; /*status : FREE or USED */
-        int bs_id; /*back store is mapped to frame */
-        int bs_pg; /*the page in the back store */
-        struct frameT * bs_frames_q; /* the list of frame associated with the particular back store */
-}frame_t;
+typedef struct frame_type{
+        int frame_no;  
+        int type; 
+        int status; 
+        int bs_id; 
+        int bs_pg; 
+        struct frame_type * fifo_queue; 
+        struct frame_type * bs_frames_q; 
+        
+        int reference_count; 
+        int accessed; 
+} frame_t;
+
+//need to maintain a data structure for the 32 bit virtual address
+typedef struct virtual_address{
+   int pg_offset  : 12;
+   int pt_offset  : 10;
+   int pd_offset  : 10;
+}virt_address;
 
 /* Structure for a page directory entry */
 
@@ -49,15 +57,6 @@ typedef struct {
   unsigned int pt_base	: 20;		/* location of page?		*/
 } pt_t;
 
-//need to maintain a data structure for the 32 bit virtual address
-typedef struct{
-   int pg_offset  : 12;
-   int pt_offset  : 10;
-   int pd_offset  : 10;
-}virt_address;
-
-extern pt_t * glb_pg_tab[];
-extern frame_t frame_table[];
 
 #define FRAME_FREE  0
 #define FRAME_USED  1
@@ -71,7 +70,7 @@ extern frame_t frame_table[];
 
 #define NBPG		4096	/* number of bytes per page	*/
 #define FRAME0		1024	/* zero-th frame		*/
-#define NFRAMES		3072	/* number of frames		*/
+#define NFRAMES		50//3072	/* number of frames		*/
 
 #define MAP_SHARED 1
 #define MAP_PRIVATE 2
@@ -81,3 +80,5 @@ extern frame_t frame_table[];
 
 #define MAX_ID		7		/* You get 8 mappings, 0 - 7 */
 #define MIN_ID          0
+extern pt_t * global_pg_tab[];
+extern frame_t frame_table[];
