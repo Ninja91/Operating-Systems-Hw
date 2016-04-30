@@ -15,11 +15,11 @@
 #endif
 
 #ifndef	RD_SERVER_PORT
-#define	RD_SERVER_PORT	30251
+#define	RD_SERVER_PORT	30150
 #endif
 
 #ifndef	RD_LOC_PORT
-#define	RD_LOC_PORT	30251		/* Base port number - minor dev	*/
+#define	RD_LOC_PORT	30150		/* Base port number - minor dev	*/
 					/*   number is added to insure	*/
 					/*   that each device is unique	*/
 #endif

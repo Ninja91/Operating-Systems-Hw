@@ -17,7 +17,7 @@ int pg_fault_handler()
     virt_address *vaddress;
     cr2 = read_cr2();
     vaddress = (virt_address *)(&cr2);
-    
+
     pd_offset = vaddress->pd_offset;
     pt_offset = vaddress->pt_offset;
     pg_offset = vaddress->pg_offset;
@@ -47,8 +47,13 @@ int pg_fault_handler()
     if (pd[pd_offset].pd_pres != 1) {
         //page table does not exist. 1st page fault has occured
 
+
+#ifdef LOGGING_ON_PF
+        kprintf("\n\nCalling create_pt\n\n");
+#endif
         pt = create_pt();
         if (pt == NULL) {
+            kprintf("\n\nKilling process in create_pt\n\n");
             kill(currpid);
             restore(mask);
             return SYSERR;
@@ -67,15 +72,25 @@ int pg_fault_handler()
         pd[pd_offset].pd_base  = ((unsigned int)pt/NBPG);  
 
     }
+    else
+    {
+        pt = pd[pd_offset].pd_base*NBPG;
+    }
 
+#ifdef LOGGING_ON_PF
+    kprintf("\n\nCalling lookup_frame_mappedto\n\n");
+#endif
     frame = lookup_frame_mappedto_bspage(bstab[bsm->bs_id].bs_id, bsoff);
+#ifdef LOGGING_ON_PF
+    kprintf("\n\n After Calling lookup_frame_mappedto\n\n");
+#endif
 
 
-	 pt[pt_offset].pt_pres  = 1;
-	 pt[pt_offset].pt_write = 1;
-	 pt[pt_offset].pt_base  = 1024+(frame->frame_id);
-	 ptframe = &frame_table[(((unsigned int)(pt)/4096)-1024)];
-	 ptframe->reference++;
+    pt[pt_offset].pt_pres  = 1;
+    pt[pt_offset].pt_write = 1;
+    pt[pt_offset].pt_base  = 1024+(frame->frame_no);
+    ptframe = &frame_table[(((unsigned int)(pt)/4096)-1024)];
+    ptframe->reference_count++;
 
     if (frame != NULL) 
     {
@@ -98,6 +113,8 @@ int pg_fault_handler()
         frame->reference_count = 1;
         frame->accessed = 1;
 
+        frame->pid = currpid;
+        frame->virtual_page_no = pt_offset;
         frame->bs_frames_q = bstab[bsm->bs_id].frames;
         bstab[bsm->bs_id].frames = frame;
 

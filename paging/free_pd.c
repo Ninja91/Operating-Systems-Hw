@@ -11,6 +11,7 @@ int free_pd(pd_t * pd)
     }
 
     free_frame(&frame_table[(((unsigned int)(pd)/NBPG)-FRAME0)]);
+    kprintf("\nFreeing frames completed\n");
     return OK;
 }
 

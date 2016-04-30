@@ -6,7 +6,7 @@
 extern int app();
 void func1()
 {
-    kprintf("\nIn func1 process");
+    /* kprintf("\nIn func1 process"); */
     struct memblk * ch = vgetmem(40*4095);    
     kprintf("\nch = %d", ch);
     int i;    
@@ -14,21 +14,20 @@ void func1()
     ptr = (char *)ch; 
     for(i=0;i<40*4096;i++)
     {
-        kprintf("\nIn fist for process");
         *ptr ='a';    
         ptr++;
-        if (i %4096 == 0)
-            kprintf("\nTouching the %d frame\n", i);
+        /* kprintf("\Looping in First for loop\n"); */
+        /* if (i %4096 == 0) */
+            /* kprintf("\nTouching the %d frame\n", i); */
 
     }
     ptr = (char *)ch;
     for(i=0;i<40*4096;i++)
     {
-        kprintf("\nIn snd for process");
         *ptr ='a';
         ptr++;
-        if (i %4096 == 0)
-            kprintf("\nTouching the %d frame\n", i);
+        /* if (i %4096 == 0) */
+            /* kprintf("\nTouching the %d frame\n", i); */
 
     }
 
@@ -53,7 +52,7 @@ process	main(void)
 
     srpolicy(3);
     resume(vcreate(func1, 1024, 150, 150, "p1", 0, NULL));
-    /* resume(vcreate(func1, 1024, 200, 125, "p1", 0)); */
+    resume(vcreate(func1, 1024, 200, 125, "p1", 0));
     /* resume (vcreate (app, 1024, 10, 150, "app process", 0, NULL)); */
     /* resume (vcreate (app, 1024, 10, 150, "app process", 0, NULL)); */
     /* Wait for shell to exit and recreate it */

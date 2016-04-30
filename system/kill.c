@@ -25,10 +25,12 @@ syscall	kill(
 		xdone();
 	}
 
+    kprintf("\n Killing proc %d", pid);
     proc_clean_bs(pid);
     hook_ptable_delete(((unsigned int)(prptr->pd)/NBPG));
     /* free_frame(&frame_table[(((unsigned) (prptr->pd)/NBPG)-FRAME0)]); */
     free_pd(proctab[pid].pd);
+    kprintf("\n Killing proc %d done", pid);
 
 	send(prptr->prparent, pid);
 	for (i=0; i<3; i++) {

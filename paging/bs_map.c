@@ -10,9 +10,9 @@ int add_bs_map(bsd_t bsid, int pid, int vpno, int npages) {
     bsmapptr->bs_id   = bsid;
     bsmapptr->pid    = pid;
     bsmapptr->npages = npages;  
-    bstab[bsid].maps    = bsmapptr;
     bsmapptr->vpno   = vpno;
     bsmapptr->next   = bstab[bsid].maps;
+    bstab[bsid].maps    = bsmapptr;
     return OK;
 }
 
@@ -56,8 +56,8 @@ bs_map * find_mapping(int pid, int vpno) {
 
     for (i=0; i < MAX_BS_ENTRIES; i++) {
         if (bstab[i].status != BS_FREE && bstab[i].maps != NULL) {      
-            prev_node = NULL;
-            cur_node = bstab[i].maps;
+            /* prev_node = NULL; */
+            /* cur_node = bstab[i].maps; */
 
             for (prev_node = NULL, cur_node = bstab[i].maps; cur_node!=NULL; prev_node = cur_node, cur_node = cur_node->next) {
                 if (cur_node->pid == pid) {

@@ -20,6 +20,8 @@ int init_frame_table() {
         frame_table[i].bs_frames_q = NULL;
 
         frame_table[i].fifo_queue = NULL;
+        frame_table[i].pid = -1;
+        frame_table[i].virtual_page_no=0;
     }
 
     return OK;
@@ -37,15 +39,16 @@ int dec_frame_refcount(frame_t * frame) {
     return OK;
 }
 
-int fifo_enqueue (frame_t * fifo_head, frame_t * fifo_node) {
+frame_t * fifo_enqueue (frame_t * fifo_head, frame_t * fifo_node) {
     if (fifo_head == NULL)
         return fifo_node;
 
     frame_t * cur = fifo_head;
-    while(cur->fifo_queue == NULL) {
+    while(cur->fifo_queue != NULL) {
         cur = cur->fifo_queue;
     }
     cur->fifo_queue = fifo_node;
+    return fifo_head;
 }
 
 frame_t  *create_frame() {
@@ -68,7 +71,7 @@ frame_t  *create_frame() {
 
     frame->fifo_queue = NULL;
 
-    fifo_enqueue(frame_fifo_head, frame);
+    frame_fifo_head = fifo_enqueue(frame_fifo_head, frame);
     return frame;
 }
 
